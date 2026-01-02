@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Duty Calculator Pro</title>
+    <style>
+        :root {
+            --color-bg-primary: rgba(252, 252, 249, 1);
+            --color-surface: rgba(255, 255, 253, 1);
+            --color-text-primary: rgba(19, 52, 59, 1);
+            --color-text-secondary: rgba(98, 108, 113, 1);
+            --color-primary: rgba(33, 128, 141, 1);
+            --color-primary-hover: rgba(29, 116, 128, 1);
+            --color-primary-active: rgba(26, 104, 115, 1);
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-focus-ring: rgba(33, 128, 141, 0.4);
+            --color-error: rgba(192, 21, 47, 1);
+            --color-success: rgba(33, 128, 141, 1);
+            --focus-ring: 0 0 0 3px var(--color-focus-ring);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            padding: 12px;
+            font-size: 16px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        input, textarea, select {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 0 8px;
+        }
+
+        h1 {
+            margin: 0 0 4px 0;
+            font-size: clamp(20px, 6vw, 28px);
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: clamp(12px, 3.5vw, 14px);
+            margin: 0;
+        }
+
+        .section {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0 0 14px 0;
+            line-height: 1.3;
+        }
+
+        .settings-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .settings-row-full {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--color-text-secondary);
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            background: var(--color-surface);
+            color: var(--color-text-primary);
+            transition: border-color 150ms, box-shadow 150ms;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"][type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px;
+            padding-right: 40px;
+        }
+
+        .btn {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 8px;
+            transition: background 150ms, transform 100ms;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn:active {
+            background: var(--color-primary-active);
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+            padding: 10px 14px;
+            font-size: 13px;
+            width: auto;
+            margin: 0 6px 6px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 150ms;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary:active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            transform: scale(0.95);
+        }
+
+        .result-box {
+            background: rgba(33, 128, 141, 0.08);
+            border: 1px solid var(--color-primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-row-label {
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            font-size: 13px;
+        }
+
+        .result-row-value {
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 15px;
+        }
+
+        .result-row.highlight .result-row-value {
+            font-size: 18px;
+        }
+
+        .error {
+            background: rgba(192, 21, 47, 0.08);
+            color: var(--color-error);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 12px;
+            border: 1px solid var(--color-error);
+            word-break: break-word;
+        }
+
+        .success {
+            background: rgba(33, 128, 141, 0.08);
+            color: var(--color-success);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 12px;
+            border: 1px solid var(--color-success);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--color-primary);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 8px 0;
+            margin-top: 8px;
+            transition: opacity 150ms;
+        }
+
+        .copy-btn:hover {
+            text-decoration: underline;
+        }
+
+        .common-currencies {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 0;
+        }
+
+        .currency-btn {
+            padding: 12px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 150ms;
+            text-align: center;
+            min-height: 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+        }
+
+        .currency-btn:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .currency-btn:active {
+            transform: scale(0.95);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--color-border);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            padding: 10px 12px;
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            font-size: 13px;
+            transition: color 150ms;
+            white-space: nowrap;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+
+        .history-table th {
+            background: rgba(94, 82, 64, 0.05);
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .history-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .history-table tr:hover {
+            background: rgba(33, 128, 141, 0.05);
+        }
+
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0 0 8px 0;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 12px;
+            min-height: 44px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .collapsible-header h2 {
+            margin: 0;
+            font-size: 15px;
+            flex: 1;
+        }
+
+        .collapse-icon {
+            font-size: 20px;
+            color: var(--color-text-secondary);
+            transition: transform 200ms;
+            flex-shrink: 0;
+            padding-left: 12px;
+        }
+
+        .collapsible-header.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 200ms ease-out;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+                font-size: 15px;
+            }
+
+            .section {
+                padding: 12px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: clamp(18px, 5vw, 24px);
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+
+            .settings-row {
+                gap: 10px;
+            }
+
+            .settings-row-full {
+                gap: 6px;
+            }
+
+            .btn {
+                padding: 12px 16px;
+                font-size: 15px;
+                min-height: 44px;
+                margin-bottom: 6px;
+            }
+
+            .btn-secondary {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-height: 40px;
+                margin: 0 4px 4px 0;
+            }
+
+            .common-currencies {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+
+            .currency-btn {
+                min-height: 48px;
+                font-size: 11px;
+                padding: 8px 4px;
+            }
+
+            .collapsible-header {
+                min-height: 40px;
+                gap: 8px;
+            }
+
+            .tab-btn {
+                padding: 8px 10px;
+                font-size: 12px;
+                min-height: 40px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            body {
+                padding: 6px;
+            }
+
+            .section {
+                padding: 10px;
+                margin-bottom: 12px;
+            }
+
+            .btn {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            .common-currencies {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+
+            .currency-btn {
+                min-height: 44px;
+                font-size: 10px;
+            }
+
+            .settings-row-full {
+                gap: 4px;
+            }
+        }
+
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(12px, env(safe-area-inset-left));
+                padding-right: max(12px, env(safe-area-inset-right));
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
+            }
+        }
+
+        @media print {
+            .btn, .btn-secondary, .collapsible-header {
+                display: none;
+            }
+
+            .collapsible-content {
+                max-height: none;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Duty Calculator Pro</h1>
+            <p class="subtitle">CBIC Notification 45/2026 w.e.f 02-01-2026</p>
+        </header>
+
+        <!-- Collapsible Settings Section -->
+        <div class="section">
+            <div class="collapsible-header" onclick="toggleSettingsCollapse()">
+                <h2>Settings Configuration</h2>
+                <span class="collapse-icon">▶</span>
+            </div>
+            <div class="collapsible-content" id="settingsContent">
+                <div class="settings-row">
+                    <div class="form-group">
+                        <label for="loadingFactor">Loading Factor</label>
+                        <input type="number" id="loadingFactor" value="1.21125" step="0.00001">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="form-group">
+                        <label for="dutyRate">Duty Rate %</label>
+                        <input type="number" id="dutyRate" value="30.98" step="0.01">
+                    </div>
+                </div>
+                <div class="settings-row-full">
+                    <button class="btn-secondary" onclick="resetSettings()">Reset</button>
+                    <button class="btn-secondary" onclick="resetFrequency()">Clear Freq</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Currency Selection -->
+        <div class="section">
+            <h2>Quick Currency Selection (Top 8)</h2>
+            <div class="common-currencies" id="commonCurrencies"></div>
+        </div>
+
+        <!-- Calculation Input Section -->
+        <div class="section">
+            <h2>Calculation Input</h2>
+            <div class="form-group">
+                <label for="currencySelect">Select Currency</label>
+                <select id="currencySelect" onchange="populateRate()">
+                    <option value="">-- Select Currency --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="declaredForeign">Declared Value (Foreign Currency)</label>
+                <input type="number" id="declaredForeign" placeholder="e.g. 1000" min="0" step="0.01" inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label for="exchangeRate">Exchange Rate (INR per unit)</label>
+                <input type="number" id="exchangeRate" placeholder="Auto-filled" min="0" step="0.01" readonly>
+            </div>
+            <button class="btn" onclick="calculate()">Calculate</button>
+            <div id="status"></div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultSection" class="section hidden">
+            <h2>Calculation Results</h2>
+            <div id="resultContainer"></div>
+        </div>
+
+        <!-- Collapsible History Section -->
+        <div id="historySection" class="section hidden">
+            <div class="collapsible-header" onclick="toggleHistoryCollapse()">
+                <h2>History & Rates</h2>
+                <span class="collapse-icon">▶</span>
+            </div>
+            <div class="collapsible-content" id="historyContent">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab(event, 'historyTab')">History</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'allRatesTab')">All Rates</button>
+                </div>
+
+                <div id="historyTab" class="tab-content active">
+                    <button class="btn-secondary" onclick="copyHistoryToClipboard()">Copy All</button>
+                    <button class="btn-secondary" onclick="clearHistory()">Clear</button>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Currency</th>
+                                <th>Rate</th>
+                                <th>Duty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="allRatesTab" class="tab-content">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Currency</th>
+                                <th>Import Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ratesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cbicRates = {
+            USD: { name: 'US Dollar', import: 90.8 },
+            EUR: { name: 'EURO', import: 107.35 },
+            GBP: { name: 'Pound Sterling', import: 122.95 },
+            SGD: { name: 'Singapore Dollar', import: 71.15 },
+            CAD: { name: 'Canadian Dollar', import: 66.65 },
+            AUD: { name: 'Australian Dollar', import: 61.4 },
+            JPY: { name: 'Japanese Yen', import: 0.5825 },
+            CNY: { name: 'Chinese Yuan', import: 13.05 },
+            AED: { name: 'UAE Dirham', import: 25.25 },
+            BHD: { name: 'Bahraini Dinar', import: 247.5 },
+            CHF: { name: 'Swiss Franc', import: 115.9 },
+            DKK: { name: 'Danish Kroner', import: 14.3 },
+            HKD: { name: 'Hong Kong Dollar', import: 11.7 },
+            KRW: { name: 'Korean won', import: 0.064 },
+            KWD: { name: 'Kuwaiti Dinar', import: 301.7 },
+            NOK: { name: 'Norwegian Kroner', import: 9.05 },
+            NZD: { name: 'New Zealand Dollar', import: 53.05 },
+            QAR: { name: 'Qatari Riyal', import: 26.4 },
+            SAR: { name: 'Saudi Arabian Riyal', import: 24.75 },
+            SEK: { name: 'Swedish Kroner', import: 9.85 },
+            TRY: { name: 'Turkish Lira', import: 2.15 },
+            ZAR: { name: 'South African Rand', import: 5.6 }
+        };
+
+        const DEFAULT_DUTY_RATE = 30.98;
+
+        let calculationHistory = [];
+        let currencyFrequency = {};
+
+        function initializePage() {
+            const savedLoadingFactor = localStorage.getItem('loadingFactor');
+            const savedDutyRate = localStorage.getItem('dutyRate');
+            if (savedLoadingFactor) document.getElementById('loadingFactor').value = savedLoadingFactor;
+            if (savedDutyRate) document.getElementById('dutyRate').value = savedDutyRate;
+
+            const savedFrequency = localStorage.getItem('currencyFrequency');
+            if (savedFrequency) currencyFrequency = JSON.parse(savedFrequency);
+
+            const savedHistory = localStorage.getItem('calculationHistory');
+            if (savedHistory) calculationHistory = JSON.parse(savedHistory);
+
+            if (calculationHistory.length > 0) {
+                document.getElementById('historySection').classList.remove('hidden');
+                updateHistoryDisplay();
+            }
+
+            populateCommonCurrencies();
+            populateCurrencySelect();
+            populateRatesTable();
+        }
+
+        function populateCommonCurrencies() {
+            const container = document.getElementById('commonCurrencies');
+            container.innerHTML = '';
+
+            const sortedCodes = Object.keys(cbicRates).sort((a, b) => {
+                const freqA = currencyFrequency[a] || 0;
+                const freqB = currencyFrequency[b] || 0;
+                if (freqB !== freqA) return freqB - freqA;
+                return a.localeCompare(b);
+            }).slice(0, 8);
+
+            sortedCodes.forEach(code => {
+                const rate = cbicRates[code];
+                const btn = document.createElement('button');
+                btn.className = 'currency-btn';
+                btn.textContent = `${code}\n${rate.import}`;
+                btn.onclick = () => selectCurrency(code, rate.import);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectCurrency(code, rate) {
+            document.getElementById('currencySelect').value = code;
+            document.getElementById('exchangeRate').value = rate.toFixed(4);
+            document.getElementById('declaredForeign').value = '';
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('status').innerHTML = '';
+            document.getElementById('declaredForeign').focus();
+        }
+
+        function populateCurrencySelect() {
+            const select = document.getElementById('currencySelect');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">-- Select Currency --</option>';
+
+            const sortedCodes = Object.keys(cbicRates).sort((a, b) => {
+                const freqA = currencyFrequency[a] || 0;
+                const freqB = currencyFrequency[b] || 0;
+                if (freqB !== freqA) return freqB - freqA;
+                return a.localeCompare(b);
+            });
+
+            sortedCodes.forEach(code => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = `${code} - ${cbicRates[code].name}`;
+                select.appendChild(option);
+            });
+
+            if (currentValue) select.value = currentValue;
+        }
+
+        function populateRate() {
+            const code = document.getElementById('currencySelect').value;
+            if (code && cbicRates[code]) {
+                document.getElementById('exchangeRate').value = cbicRates[code].import.toFixed(4);
+                document.getElementById('declaredForeign').value = '';
+                document.getElementById('resultSection').classList.add('hidden');
+                document.getElementById('status').innerHTML = '';
+                document.getElementById('declaredForeign').focus();
+            } else {
+                document.getElementById('exchangeRate').value = '';
+                document.getElementById('declaredForeign').value = '';
+                document.getElementById('resultSection').classList.add('hidden');
+                document.getElementById('status').innerHTML = '';
+            }
+        }
+
+        function populateRatesTable() {
+            const tbody = document.getElementById('ratesBody');
+            tbody.innerHTML = '';
+
+            Object.entries(cbicRates).forEach(([code, data]) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>${code}</strong></td><td>${data.name}</td><td>${data.import.toFixed(4)}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calculate() {
+            const currencyCode = document.getElementById('currencySelect').value;
+            const declaredForeign = parseFloat(document.getElementById('declaredForeign').value);
+            const exchangeRate = parseFloat(document.getElementById('exchangeRate').value);
+            const loadingFactor = parseFloat(document.getElementById('loadingFactor').value);
+            const dutyRate = parseFloat(document.getElementById('dutyRate').value) / 100;
+
+            document.getElementById('status').innerHTML = '';
+
+            if (!currencyCode) {
+                showStatus('Please select a currency', 'error');
+                return;
+            }
+            if (!declaredForeign || declaredForeign <= 0) {
+                showStatus('Please enter a valid declared value', 'error');
+                return;
+            }
+            if (!exchangeRate || exchangeRate <= 0) {
+                showStatus('Please enter a valid exchange rate', 'error');
+                return;
+            }
+
+            localStorage.setItem('loadingFactor', loadingFactor);
+            localStorage.setItem('dutyRate', (dutyRate * 100).toFixed(2));
+
+            currencyFrequency[currencyCode] = (currencyFrequency[currencyCode] || 0) + 1;
+            localStorage.setItem('currencyFrequency', JSON.stringify(currencyFrequency));
+            populateCommonCurrencies();
+            populateCurrencySelect();
+
+            const declaredInr = declaredForeign * exchangeRate;
+            const assessedValue = declaredInr * loadingFactor;
+            const duty = assessedValue * dutyRate;
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+            calculationHistory.unshift({
+                time: timeStr,
+                currency: currencyCode,
+                rate: exchangeRate,
+                duty: duty.toFixed(2)
+            });
+
+            if (calculationHistory.length > 20) {
+                calculationHistory = calculationHistory.slice(0, 20);
+            }
+
+            localStorage.setItem('calculationHistory', JSON.stringify(calculationHistory));
+            displayResults(currencyCode, declaredForeign, exchangeRate, declaredInr, assessedValue, duty, loadingFactor, dutyRate);
+            updateHistoryDisplay();
+            document.getElementById('historySection').classList.remove('hidden');
+        }
+
+        function displayResults(currencyCode, declaredForeign, exchangeRate, declaredInr, assessedValue, duty, loadingFactor, dutyRate) {
+            const resultSection = document.getElementById('resultSection');
+            const resultContainer = document.getElementById('resultContainer');
+
+            resultContainer.innerHTML = `
+                <div class="result-box">
+                    <div class="result-row">
+                        <span class="result-row-label">Currency</span>
+                        <span class="result-row-value">${currencyCode} - ${cbicRates[currencyCode].name}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-row-label">Declared Value (Foreign)</span>
+                        <span class="result-row-value">${declaredForeign.toFixed(2)} ${currencyCode}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-row-label">Exchange Rate</span>
+                        <span class="result-row-value">${exchangeRate.toFixed(4)}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-row-label">Declared Value INR</span>
+                        <span class="result-row-value">${declaredInr.toFixed(2)}</span>
+                    </div>
+                    <div class="result-row highlight">
+                        <span class="result-row-label"><strong>Assessed Value (LF: ${loadingFactor.toFixed(5)})</strong></span>
+                        <span class="result-row-value"><strong>${assessedValue.toFixed(2)}</strong></span>
+                    </div>
+                    <div class="result-row highlight">
+                        <span class="result-row-label"><strong>Duty (${(dutyRate * 100).toFixed(2)}%)</strong></span>
+                        <span class="result-row-value"><strong>${duty.toFixed(2)}</strong></span>
+                    </div>
+                    <button class="copy-btn" onclick="copyResult('${duty.toFixed(2)}')">Copy Duty</button>
+                </div>
+            `;
+
+            resultSection.classList.remove('hidden');
+        }
+
+        function updateHistoryDisplay() {
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+
+            calculationHistory.forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${entry.time}</td><td>${entry.currency}</td><td>${parseFloat(entry.rate).toFixed(2)}</td><td>${entry.duty}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function copyResult(value) {
+            navigator.clipboard.writeText(value).then(() => {
+                showStatus(`Copied: ${value}`, 'success');
+            });
+        }
+
+        function copyHistoryToClipboard() {
+            let text = 'Time\tCurrency\tRate\tDuty\n';
+            calculationHistory.forEach(entry => {
+                text += `${entry.time}\t${entry.currency}\t${entry.rate}\t${entry.duty}\n`;
+            });
+            navigator.clipboard.writeText(text).then(() => {
+                showStatus('History copied', 'success');
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Clear all calculation history?')) {
+                calculationHistory = [];
+                localStorage.removeItem('calculationHistory');
+                updateHistoryDisplay();
+                document.getElementById('historySection').classList.add('hidden');
+                showStatus('History cleared', 'success');
+            }
+        }
+
+        function resetSettings() {
+            document.getElementById('loadingFactor').value = '1.21125';
+            document.getElementById('dutyRate').value = '30.98';
+            localStorage.removeItem('loadingFactor');
+            localStorage.removeItem('dutyRate');
+            showStatus('Settings reset', 'success');
+        }
+
+        function resetFrequency() {
+            if (confirm('Reset currency usage frequency?')) {
+                currencyFrequency = {};
+                localStorage.removeItem('currencyFrequency');
+                populateCommonCurrencies();
+                populateCurrencySelect();
+                showStatus('Frequency cleared', 'success');
+            }
+        }
+
+        function switchTab(event, tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                statusEl.innerHTML = '';
+            }, 3000);
+        }
+
+        function toggleSettingsCollapse() {
+            const content = document.getElementById('settingsContent');
+            const header = content.previousElementSibling;
+            content.classList.toggle('collapsed');
+            header.classList.toggle('collapsed');
+        }
+
+        function toggleHistoryCollapse() {
+            const header = document.getElementById('historySection').querySelector('.collapsible-header');
+            const content = document.getElementById('historyContent');
+            content.classList.toggle('collapsed');
+            header.classList.toggle('collapsed');
+        }
+
+        window.addEventListener('load', initializePage);
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.id === 'declaredForeign') {
+                calculate();
+            }
+        });
+    </script>
+</body>
+</html>
