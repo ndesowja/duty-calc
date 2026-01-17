@@ -552,11 +552,13 @@
 
         <!-- Collapsible Settings Section -->
         <div class="section">
-            <div class="collapsible-header" onclick="toggleSettingsCollapse()">
+            <!-- Added "collapsed" class here -->
+            <div class="collapsible-header collapsed" onclick="toggleSettingsCollapse()">
                 <h2>Settings Configuration</h2>
                 <span class="collapse-icon">▶</span>
             </div>
-            <div class="collapsible-content" id="settingsContent">
+            <!-- Added "collapsed" class here -->
+            <div class="collapsible-content collapsed" id="settingsContent">
                 <div class="settings-row">
                     <div class="form-group">
                         <label for="loadingFactor">Loading Factor</label>
@@ -970,5 +972,6 @@
     </script>
 </body>
 </html>
+
 
 
